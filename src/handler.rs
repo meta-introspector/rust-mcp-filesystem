@@ -10,6 +10,7 @@ use rust_mcp_sdk::schema::{
     InitializeResult, ListToolsRequest, ListToolsResult, RpcError,
 };
 use rust_mcp_sdk::McpServer;
+use futures::TryFutureExt;
 
 pub struct MyServerHandler {
     readonly: bool,
@@ -77,7 +78,7 @@ impl ServerHandler for MyServerHandler {
     ) -> std::result::Result<InitializeResult, RpcError> {
         runtime
             .set_client_details(initialize_request.params.clone())
-            .map_err(|err| RpcError::internal_error().with_message(format!("{err}")))?;
+            .map_err(|err| RpcError::internal_error().with_message(format!("{err}"))).await?;
 
         let mut server_info = runtime.server_info().to_owned();
         // Provide compatibility for clients using older MCP protocol versions.
